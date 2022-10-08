@@ -55,7 +55,7 @@ the `Nav` component to your navigating entity. See the `nav.rs` example. If you 
 getting it to generate a path, enable the `log` feature, and it might tell you what's wrong.
 
 If you need help, feel free to ping me
-on [the Bevy Discord server](https://discord.com/invite/bevy)(`@Seldom`)! If any of the docs
+on [the Bevy Discord server](https://discord.com/invite/bevy) (`@Seldom`)! If any of the docs
 need improvement, feel free to submit an issue or pr!
 
 ## Compatibility
