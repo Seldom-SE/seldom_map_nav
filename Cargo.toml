@@ -1,0 +1,31 @@
+[package]
+name = "seldom_map_nav"
+version = "0.1.0"
+edition = "2021"
+categories = [ "game-development" ]
+description = "Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency."
+exclude = [ "assets/" ]
+keywords = [ "gamedev", "bevy", "pathfinding", "navmesh", "tilemap" ]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/Seldom-SE/seldom_map_nav"
+
+[features]
+bevy = [ "dep:bevy", "dep:seldom_fn_plugin", "dep:seldom_interop" ]
+default = [ "bevy" ]
+log = []
+state = [ "dep:seldom_state" ]
+
+[dependencies]
+bevy = { version = "0.8", default-features = false, optional = true }
+cdt = "0.1"
+glam = { version = "0.21", features = [ "mint" ] }
+mint = "0.5"
+navmesh = { version = "0.12", features = [ "mint" ] }
+seldom_fn_plugin = { version = "0.1", optional = true }
+seldom_interop = { version = "0.1", optional = true }
+seldom_state = { version = "0.2", optional = true }
+
+[dev-dependencies]
+bevy = "0.8"
+rand = "0.8"
