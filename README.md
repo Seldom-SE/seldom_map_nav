@@ -21,6 +21,8 @@ with the `state` feature.
 
 ## Future Work
 
+This crate is currently is maintenance mode, so I'm not currently adding new features.
+
 - [ ] Tiles that can be pathed over in certain situations, such as doors
 - [ ] Tiles that cannot be pathed over, but do not need clearance generated, such as holes
 
@@ -62,6 +64,7 @@ need improvement, feel free to submit an issue or pr!
 
 | Bevy | `seldom_state` | `seldom_map_nav` |
 | ---- | -------------- | ---------------- |
+| 0.9  | 0.3            | 0.2              |
 | 0.8  | 0.2            | 0.1              |
 
 ## License

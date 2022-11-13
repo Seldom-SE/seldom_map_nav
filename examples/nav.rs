@@ -23,7 +23,7 @@ const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 const PLAYER_CLEARANCE: f32 = 8.;
 
 fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(Camera2dBundle {
+    commands.spawn(Camera2dBundle {
         // Centering the camera
         transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
         ..default()
@@ -47,7 +47,7 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
                 let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
                 player_pos = pos;
 
-                commands.spawn_bundle(SpriteBundle {
+                commands.spawn(SpriteBundle {
                     sprite: Sprite {
                         anchor: Anchor::BottomLeft,
                         ..default()
@@ -64,18 +64,18 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // Spawn the tilemap with a `Navmeshes` component
     commands
-        .spawn()
-        .insert(Navmeshes::generate(MAP_SIZE, TILE_SIZE, navability, [PLAYER_CLEARANCE]).unwrap());
+        .spawn(Navmeshes::generate(MAP_SIZE, TILE_SIZE, navability, [PLAYER_CLEARANCE]).unwrap());
 
     // Spawn the player component. A position component is necessary. We will add `NavBundle`
     // later.
-    commands
-        .spawn_bundle(SpriteBundle {
+    commands.spawn((
+        SpriteBundle {
             transform: Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
             texture: asset_server.load("player.png"),
             ..default()
-        })
-        .insert(Player);
+        },
+        Player,
+    ));
 }
 
 // Navigate the player to wherever you click
@@ -92,7 +92,7 @@ fn move_player(
             // Add `NavBundle` to start navigating to that position
             // If you want to write your own movement, but still want paths generated,
             // only insert `Pathfind`.
-            commands.entity(players.single()).insert_bundle(NavBundle {
+            commands.entity(players.single()).insert(NavBundle {
                 pathfind: Pathfind::new(
                     navmesheses.single(),
                     PLAYER_CLEARANCE,
@@ -112,7 +112,7 @@ fn move_player(
 #[derive(Component)]
 struct Player;
 
-#[derive(Default, Deref, DerefMut)]
+#[derive(Default, Deref, DerefMut, Resource)]
 struct CursorPos(Option<Vec2>);
 
 fn update_cursor_pos(

@@ -106,9 +106,9 @@ pub(crate) fn generate_paths<P: Position2<Position = Vec2>>(
         let repath = pathfind
             .repath_frequency
             .map(|repath_frequency| {
-                let repath = pathfind.next_repath <= time.time_since_startup();
+                let repath = pathfind.next_repath <= time.elapsed();
                 if repath {
-                    pathfind.next_repath = time.time_since_startup() + repath_frequency;
+                    pathfind.next_repath = time.elapsed() + repath_frequency;
                 }
                 repath
             })
@@ -120,52 +120,54 @@ pub(crate) fn generate_paths<P: Position2<Position = Vec2>>(
                 path
             });
 
-        if repath {
-            let path = || -> Result<VecDeque<Vec2>, Box<dyn Error>> {
-                Ok(meshes
-                    .get(pathfind.map)?
-                    .mesh(pathfind.radius)
-                    .ok_or_else(|| {
-                        format!(
-                            "missing navmesh with clearance of at least {}",
-                            pathfind.radius
-                        )
-                    })?
-                    .find_path(
-                        Vector3::from(position.get().extend(0.)).into(),
-                        Vector3::from(
-                            match pathfind.target {
-                                PathTarget::Static(target) => target,
-                                PathTarget::Dynamic(target) => positions.get(target)?.get(),
-                            }
-                            .extend(0.),
-                        )
-                        .into(),
-                        pathfind.query,
-                        pathfind.path_mode,
+        if !repath {
+            continue;
+        }
+
+        let path = || -> Result<VecDeque<Vec2>, Box<dyn Error>> {
+            Ok(meshes
+                .get(pathfind.map)?
+                .mesh(pathfind.radius)
+                .ok_or_else(|| {
+                    format!(
+                        "missing navmesh with clearance of at least {}",
+                        pathfind.radius
                     )
-                    .ok_or("no valid path was found")?
-                    .into_iter()
-                    .map(|pos| Vec3::from(Vector3::from(pos)).truncate())
-                    .collect())
-            }();
+                })?
+                .find_path(
+                    Vector3::from(position.get().extend(0.)).into(),
+                    Vector3::from(
+                        match pathfind.target {
+                            PathTarget::Static(target) => target,
+                            PathTarget::Dynamic(target) => positions.get(target)?.get(),
+                        }
+                        .extend(0.),
+                    )
+                    .into(),
+                    pathfind.query,
+                    pathfind.path_mode,
+                )
+                .ok_or("no valid path was found")?
+                .into_iter()
+                .map(|pos| Vec3::from(Vector3::from(pos)).truncate())
+                .collect())
+        }();
 
-            #[cfg(feature = "log")]
-            if let Err(error) = &path {
-                warn!("failed to generate path: {error}");
-            }
-            #[cfg(feature = "state")]
-            let failure = path.is_err();
-            pathfind.path = path.unwrap_or_default();
+        #[cfg(feature = "log")]
+        if let Err(error) = &path {
+            warn!("failed to generate path: {error}");
+        }
+        #[cfg(feature = "state")]
+        let failure = path.is_err();
+        pathfind.path = path.unwrap_or_default();
 
-            if let Ok(mut nav) = navs.get_mut(entity) {
-                nav.done = pathfind.path.is_empty();
+        let Ok(mut nav) = navs.get_mut(entity) else { continue };
 
-                #[cfg(feature = "state")]
-                if failure {
-                    commands.entity(entity).insert(Done::failure());
-                }
-            }
+        nav.done = pathfind.path.is_empty();
+
+        #[cfg(feature = "state")]
+        if failure {
+            commands.entity(entity).insert(Done::Failure);
         }
     }
 }
@@ -181,7 +183,7 @@ fn nav<P: Position2<Position = Vec2>>(
 
         if pathfind.path.is_empty() {
             #[cfg(feature = "state")]
-            commands.entity(entity).insert(Done::success());
+            commands.entity(entity).insert(Done::Success);
             continue;
         }
 
@@ -206,7 +208,7 @@ fn nav<P: Position2<Position = Vec2>>(
         if pathfind.path.is_empty() {
             nav.done = true;
             #[cfg(feature = "state")]
-            commands.entity(entity).insert(Done::success());
+            commands.entity(entity).insert(Done::Success);
         } else {
             let delta = (dest - pos).normalize() * travel_dist;
             pos += delta;
