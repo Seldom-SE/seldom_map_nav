@@ -6,8 +6,7 @@ use navmesh::{NavPathMode, NavQuery};
 use crate::{prelude::*, stage::MapNavStage};
 
 pub(crate) fn nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
-    app.add_system_to_stage(MapNavStage, nav::<P>.after(generate_paths::<P>))
-        .add_system_to_stage(MapNavStage, generate_paths::<P>);
+    app.add_systems((nav::<P>, generate_paths::<P>).chain().in_set(MapNavStage));
 }
 
 /// A target to navigate to

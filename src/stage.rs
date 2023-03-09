@@ -3,5 +3,5 @@
 use crate::prelude::*;
 
 /// Stage used by this crate
-#[derive(Debug, StageLabel)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, SystemSet)]
 pub struct MapNavStage;

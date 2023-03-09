@@ -12,8 +12,7 @@ fn main() {
         .add_plugin(MapNavPlugin::<Transform>::default())
         .init_resource::<CursorPos>()
         .add_startup_system(init)
-        .add_system(update_cursor_pos)
-        .add_system(move_player.after(update_cursor_pos))
+        .add_systems((update_cursor_pos, move_player).chain())
         .run();
 }
 
@@ -117,18 +116,16 @@ struct CursorPos(Option<Vec2>);
 
 fn update_cursor_pos(
     cameras: Query<&Transform, With<Camera2d>>,
-    windows: Res<Windows>,
+    windows: Query<&Window>,
     mut pos: ResMut<CursorPos>,
 ) {
-    if let Ok(transform) = cameras.get_single() {
-        let window = windows.get_primary().unwrap();
-        **pos = window.cursor_position().map(|cursor_pos| {
-            (transform.compute_matrix()
-                * (cursor_pos - Vec2::new(window.width(), window.height()) / 2.)
-                    .extend(0.)
-                    .extend(1.))
-            .truncate()
-            .truncate()
-        });
-    }
+    let window = windows.single();
+    **pos = window.cursor_position().map(|cursor_pos| {
+        (cameras.single().compute_matrix()
+            * (cursor_pos - Vec2::new(window.width(), window.height()) / 2.)
+                .extend(0.)
+                .extend(1.))
+        .truncate()
+        .truncate()
+    });
 }

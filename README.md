@@ -64,6 +64,7 @@ need improvement, feel free to submit an issue or pr!
 
 | Bevy | `seldom_state` | `seldom_map_nav` |
 | ---- | -------------- | ---------------- |
+| 0.10 | 0.5            | 0.3              |
 | 0.9  | 0.3            | 0.2              |
 | 0.8  | 0.2            | 0.1              |
 

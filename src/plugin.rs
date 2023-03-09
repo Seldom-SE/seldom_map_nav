@@ -23,6 +23,6 @@ impl<P: Position2<Position = Vec2>> Default for MapNavPlugin<P> {
 /// Function called by [`MapNavPlugin`]. You may instead call it directly
 /// or use `seldom_fn_plugin`, which is another crate I maintain.
 pub fn map_nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
-    app.add_stage_before(CoreStage::Update, MapNavStage, SystemStage::parallel())
+    app.configure_set(MapNavStage.in_base_set(CoreSet::Update))
         .fn_plugin(nav_plugin::<P>);
 }
