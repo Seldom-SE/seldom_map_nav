@@ -66,8 +66,7 @@ impl Pathfind {
     }
 }
 
-/// Add this component and [`Pathfind`] to your entity to have it navigate. With `seldom_state`,
-/// use [`NavBundle`] as a state instead.
+/// Add this component and [`Pathfind`] to your entity to have it navigate
 #[derive(Clone, Component, Copy, Debug, Reflect)]
 pub struct Nav {
     /// Speed by which to navigate
@@ -83,7 +82,7 @@ impl Nav {
     }
 }
 
-/// Components required for navigation. Works as a state in `seldom_state`.
+/// Components required for navigation
 #[derive(Bundle, Clone, Debug, Reflect)]
 pub struct NavBundle {
     /// Pathfinding

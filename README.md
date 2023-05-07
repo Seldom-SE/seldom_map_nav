@@ -32,9 +32,8 @@ though.
 
 ## [`seldom_state`](https://github.com/Seldom-SE/seldom_state) Compatibility
 
-The `Pathfind` component and `NavBundle` work as states without enabling the `state` feature.
-However, if the `state` feature is enabled, it will trigger the `DoneTrigger` when it is done
-navigating (if it reaches the destination or cannot find a path).
+If the `state` feature is enabled, it will trigger the `DoneTrigger` when it is done navigating (if
+it reaches the destination or cannot find a path).
 
 ## Usage
 
@@ -64,6 +63,7 @@ need improvement, feel free to submit an issue or pr!
 
 | Bevy | `seldom_state` | `seldom_map_nav` |
 | ---- | -------------- | ---------------- |
+| 0.10 | 0.6            | 0.4              |
 | 0.10 | 0.5            | 0.3              |
 | 0.9  | 0.3            | 0.2              |
 | 0.8  | 0.2            | 0.1              |
