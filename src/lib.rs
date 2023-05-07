@@ -9,7 +9,7 @@ mod nav;
 #[cfg(feature = "bevy")]
 mod plugin;
 #[cfg(feature = "bevy")]
-pub mod stage;
+pub mod set;
 mod vertex;
 
 /// Module for convenient imports. Use with `use seldom_map_nav::prelude::*;`.

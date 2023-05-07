@@ -3,10 +3,10 @@ use std::{collections::VecDeque, error::Error, time::Duration};
 use mint::Vector3;
 use navmesh::{NavPathMode, NavQuery};
 
-use crate::{prelude::*, stage::MapNavStage};
+use crate::{prelude::*, set::MapNevSet};
 
 pub(crate) fn nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
-    app.add_systems((nav::<P>, generate_paths::<P>).chain().in_set(MapNavStage));
+    app.add_systems((nav::<P>, generate_paths::<P>).chain().in_set(MapNevSet));
 }
 
 /// A target to navigate to

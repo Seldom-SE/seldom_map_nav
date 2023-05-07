@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::{nav::nav_plugin, prelude::*, stage::MapNavStage};
+use crate::{nav::nav_plugin, prelude::*, set::MapNevSet};
 use seldom_fn_plugin::FnPluginExt;
 
 /// Add to your app to enable pathing and navigation. The type parameter accepts
@@ -23,6 +23,6 @@ impl<P: Position2<Position = Vec2>> Default for MapNavPlugin<P> {
 /// Function called by [`MapNavPlugin`]. You may instead call it directly
 /// or use `seldom_fn_plugin`, which is another crate I maintain.
 pub fn map_nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
-    app.configure_set(MapNavStage.in_base_set(CoreSet::Update))
+    app.configure_set(MapNevSet.in_base_set(CoreSet::Update))
         .fn_plugin(nav_plugin::<P>);
 }
