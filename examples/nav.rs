@@ -6,13 +6,12 @@ use seldom_map_nav::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins((DefaultPlugins, MapNavPlugin::<Transform>::default()))
         // This plugin is required for pathfinding and navigation
         // The type parameter is the position component that you use
-        .add_plugin(MapNavPlugin::<Transform>::default())
         .init_resource::<CursorPos>()
-        .add_startup_system(init)
-        .add_systems((update_cursor_pos, move_player).chain())
+        .add_systems(Startup, init)
+        .add_systems(Update, (update_cursor_pos, move_player).chain())
         .run();
 }
 
@@ -115,17 +114,13 @@ struct Player;
 struct CursorPos(Option<Vec2>);
 
 fn update_cursor_pos(
-    cameras: Query<&Transform, With<Camera2d>>,
+    cameras: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
-    mut pos: ResMut<CursorPos>,
+    mut position: ResMut<CursorPos>,
 ) {
-    let window = windows.single();
-    **pos = window.cursor_position().map(|cursor_pos| {
-        (cameras.single().compute_matrix()
-            * (cursor_pos - Vec2::new(window.width(), window.height()) / 2.)
-                .extend(0.)
-                .extend(1.))
-        .truncate()
-        .truncate()
-    });
+    let (camera, transform) = cameras.single();
+    **position = windows
+        .single()
+        .cursor_position()
+        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos));
 }

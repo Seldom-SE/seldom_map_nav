@@ -3,10 +3,13 @@ use std::{collections::VecDeque, error::Error, time::Duration};
 use mint::Vector3;
 use navmesh::{NavPathMode, NavQuery};
 
-use crate::{prelude::*, set::MapNevSet};
+use crate::{prelude::*, set::MapNavSet};
 
 pub(crate) fn nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
-    app.add_systems((nav::<P>, generate_paths::<P>).chain().in_set(MapNevSet));
+    app.add_systems(
+        Update,
+        (nav::<P>, generate_paths::<P>).chain().in_set(MapNavSet),
+    );
 }
 
 /// A target to navigate to
@@ -20,7 +23,7 @@ pub enum PathTarget {
 
 /// Add this component to your entity to have it generate paths. Works as a state
 /// in `seldom_state`.
-#[derive(Clone, Component, Debug, Reflect)]
+#[derive(Clone, Component, Debug)]
 pub struct Pathfind {
     /// Tilemap with the [`Navmeshes`] component
     pub map: Entity,
@@ -33,13 +36,10 @@ pub struct Pathfind {
     /// Target to navigate to
     pub target: PathTarget,
     /// Generated path
-    #[reflect(ignore)]
     pub path: VecDeque<Vec2>,
     /// Quality of querying a point on the navmesh
-    #[reflect(ignore)]
     pub query: NavQuery,
     /// Quality of finding a path
-    #[reflect(ignore)]
     pub path_mode: NavPathMode,
 }
 
@@ -83,7 +83,7 @@ impl Nav {
 }
 
 /// Components required for navigation
-#[derive(Bundle, Clone, Debug, Reflect)]
+#[derive(Bundle, Clone, Debug)]
 pub struct NavBundle {
     /// Pathfinding
     pub pathfind: Pathfind,

@@ -17,15 +17,15 @@ log = []
 state = [ "dep:seldom_state" ]
 
 [dependencies]
-bevy = { version = "0.10", default-features = false, optional = true }
+bevy = { version = "0.11", default-features = false, optional = true }
 cdt = "0.1"
-glam = { version = "0.23", features = [ "mint" ] }
+glam = { version = "0.24", features = [ "mint" ] }
 mint = "0.5"
 navmesh = { version = "0.12", features = [ "mint" ] }
-seldom_fn_plugin = { version = "0.3", optional = true }
-seldom_interop = { version = "0.3", optional = true }
-seldom_state = { version = "0.6", optional = true }
+seldom_fn_plugin = { git = "https://github.com/Seldom-SE/seldom_fn_plugin", optional = true }
+seldom_interop = { git = "https://github.com/Seldom-SE/seldom_interop", optional = true }
+seldom_state = { git = "https://github.com/Seldom-SE/seldom_state", optional = true }
 
 [dev-dependencies]
-bevy = "0.10"
+bevy = "0.11"
 rand = "0.8"
