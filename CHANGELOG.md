@@ -1,11 +1,21 @@
 # Changelog
 
+## 0.5 (2023-07-15)
+
+### Changed
+
+- Updated `bevy` to 0.11
+
+### Fixed
+
+- Renamed `MapNevSet` to `MapNavSet`
+
 ## 0.4 (2023-05-07)
 
 ### Changed
 
 - Updated `seldom_state` to 0.6
-- Renamed `stage` module to `set` and `MapNavStage` to `MapNavSet`
+- Renamed `stage` module to `set` and `MapNavStage` to `MapNevSet` (sic)
 
 ## 0.3 (2023-03-12)
 
