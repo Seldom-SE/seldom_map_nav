@@ -34,6 +34,7 @@ though.
 
 If the `state` feature is enabled, it will trigger the `DoneTrigger` when it is done navigating (if
 it reaches the destination or cannot find a path).
+Also, see related example: ```cargo run --example state --features="state"```
 
 ## Usage
 
