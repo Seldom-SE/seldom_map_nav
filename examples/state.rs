@@ -105,6 +105,7 @@ fn move_player(
 }
 
 // The code after relates to `nav` example
+
 const MAP_SIZE: UVec2 = UVec2::new(24, 24);
 const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 // This is the radius of a square around the player that should not intersect with the terrain

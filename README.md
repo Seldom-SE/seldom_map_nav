@@ -21,7 +21,7 @@ with the `state` feature.
 
 ## Future Work
 
-This crate is currently is maintenance mode, so I'm not currently adding new features.
+This crate is currently in maintenance mode, so I'm not currently adding new features.
 
 - [ ] Tiles that can be pathed over in certain situations, such as doors
 - [ ] Tiles that cannot be pathed over, but do not need clearance generated, such as holes
