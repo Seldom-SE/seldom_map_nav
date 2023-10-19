@@ -8,7 +8,9 @@ use crate::{prelude::*, set::MapNavSet};
 pub(crate) fn nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
     app.add_systems(
         Update,
-        (nav::<P>, generate_paths::<P>).chain().in_set(MapNavSet),
+        (apply_deferred, generate_paths::<P>, nav::<P>)
+            .chain()
+            .in_set(MapNavSet),
     );
 }
 
@@ -27,7 +29,7 @@ pub enum PathTarget {
 pub struct Pathfind {
     /// Tilemap with the [`Navmeshes`] component
     pub map: Entity,
-    /// Speed by which to navigate
+    /// Clearance radius
     pub radius: f32,
     /// How often to regenerate the path, if ever
     pub repath_frequency: Option<Duration>,
@@ -177,14 +179,13 @@ fn nav<P: Position2<Position = Vec2>>(
 ) {
     #[allow(unused_variables)]
     for (entity, mut position, mut pathfind, mut nav) in &mut navs {
-        let mut pos = position.get();
-
         if pathfind.path.is_empty() {
             #[cfg(feature = "state")]
             commands.entity(entity).insert(Done::Success);
             continue;
         }
 
+        let mut pos = position.get();
         let mut travel_dist = nav.speed * time.delta_seconds();
         let mut dest;
         let mut dest_dist;
