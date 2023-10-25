@@ -21,7 +21,7 @@ with the `state` feature.
 
 ## Future Work
 
-This crate is currently is maintenance mode, so I'm not currently adding new features.
+This crate is currently in maintenance mode, so I'm not currently adding new features.
 
 - [ ] Tiles that can be pathed over in certain situations, such as doors
 - [ ] Tiles that cannot be pathed over, but do not need clearance generated, such as holes
@@ -34,6 +34,7 @@ though.
 
 If the `state` feature is enabled, it will trigger the `DoneTrigger` when it is done navigating (if
 it reaches the destination or cannot find a path).
+Also, see related example: ```cargo run --example state --features="state"```
 
 ## Usage
 
