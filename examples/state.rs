@@ -3,15 +3,15 @@
 use bevy::{prelude::*, sprite::Anchor};
 use rand::{thread_rng, Rng};
 use seldom_map_nav::prelude::*;
-use seldom_state::prelude::*;
 use seldom_map_nav::set::MapNavSet;
+use seldom_state::prelude::*;
 
 #[derive(Clone, Reflect)]
 struct Click;
 
-// implementing `OptionTrigger` trait will allow to use Click in transition building later
+// Triggers are used to create transitions between states
 impl OptionTrigger for Click {
-    // any immutable resources allowed here
+    // Immutable system parameters are accessed here
     type Param<'w, 's> = (Res<'w, Input<MouseButton>>, Res<'w, CursorPos>);
     type Some = Vec2;
 
@@ -19,13 +19,15 @@ impl OptionTrigger for Click {
         mouse
             .just_pressed(MouseButton::Left)
             .then_some(())
-            // return any necessary trigger data here. here we return Vec2 that Player will move to
+            // Return any needed trigger data here. Here we return a `Vec2` that the player will
+            // move to
             .and(**cursor_position)
     }
 }
 
-// define 2 states we will switch between, with triggers
-// using SparseSet for quick adding/removing, instead of Table
+// Two states that we will switch between, using SparseSet instead of Table for fast insertion and
+// removal
+
 #[derive(Clone, Component, Reflect)]
 #[component(storage = "SparseSet")]
 struct Idle;
@@ -39,25 +41,32 @@ struct GoToSelection {
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, StateMachinePlugin, MapNavPlugin::<Transform>::default()))
+        .add_plugins((
+            DefaultPlugins,
+            StateMachinePlugin,
+            MapNavPlugin::<Transform>::default(),
+        ))
         .init_resource::<CursorPos>()
         .add_systems(Startup, init)
-        .add_systems(Update, (
-            update_cursor_pos,
-            // It's important to start movement before pathfind logic, or we will get Idle message just after we click
-            move_player.before(MapNavSet)
-        ).chain())
+        .add_systems(
+            Update,
+            (
+                update_cursor_pos,
+                // This system ordering prevents the player from getting stuck idle
+                move_player.before(MapNavSet),
+            )
+                .chain(),
+        )
         .run();
 }
 
 fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    //moved `nav` related code to inner function
-    let player_bundle = _init(&mut commands, &asset_server);
+    let player_bundle = init_inner(&mut commands, &asset_server);
 
     commands.spawn((
         player_bundle,
         StateMachine::default()
-            // When the player clicks, go there. Using previously defined `Click` trigger gere
+            // When the player clicks, go there. Using previously defined `Click` trigger here
             .trans_builder(Click, |_: &AnyState, pos| {
                 Some(GoToSelection {
                     speed: 200.,
@@ -67,18 +76,9 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
             // `DoneTrigger` triggers when the `Done` component is added to the entity. When they're
             // done going to the selection, idle.
             .trans::<GoToSelection>(DoneTrigger::Success, Idle)
-            // here you can modify any entity components you need, e.x. animation state
-            .on_enter::<Idle>(|_entity_commands| {
-                // _entity_commands.remove(some_component)
-                info!("IDLE!");
-            })
-            .on_enter::<GoToSelection>(|_entity_commands| {
-                // _entity_commands.insert(some_component)
-                info!("GOTO!");
-            })
             .set_trans_logging(true),
         Player,
-        Idle
+        Idle,
     ));
 }
 
@@ -88,7 +88,7 @@ fn move_player(
     players: Query<(Entity, &GoToSelection), Added<GoToSelection>>,
     navmesheses: Query<Entity, With<Navmeshes>>,
 ) {
-    // GoToSelection component was added by state machine system after Click trigger
+    // `GoToSelection` component was added by the state machine after `Click` triggers
     for (entity, go_to_selection) in &players {
         commands.entity(entity).insert(NavBundle {
             pathfind: Pathfind::new(
@@ -104,17 +104,14 @@ fn move_player(
     }
 }
 
-// The code after relates to `nav` example
+// The code after this comment is less relevant to this particular example
 
 const MAP_SIZE: UVec2 = UVec2::new(24, 24);
 const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 // This is the radius of a square around the player that should not intersect with the terrain
 const PLAYER_CLEARANCE: f32 = 8.;
 
-fn _init(
-    commands: &mut Commands,
-    asset_server: &Res<AssetServer>
-) -> SpriteBundle {
+fn init_inner(commands: &mut Commands, asset_server: &Res<AssetServer>) -> SpriteBundle {
     commands.spawn(Camera2dBundle {
         // Centering the camera
         transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
@@ -152,8 +149,6 @@ fn _init(
         }
     }
 
-    // Here's the important bit:
-
     // Spawn the tilemap with a `Navmeshes` component
     commands
         .spawn(Navmeshes::generate(MAP_SIZE, TILE_SIZE, navability, [PLAYER_CLEARANCE]).unwrap());
@@ -164,8 +159,6 @@ fn _init(
         ..default()
     }
 }
-
-// The code after this comment is not related to `seldom_map_nav`
 
 #[derive(Component)]
 struct Player;
