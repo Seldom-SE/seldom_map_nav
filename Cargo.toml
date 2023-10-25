@@ -28,4 +28,5 @@ seldom_state = { version = "0.7", optional = true }
 
 [dev-dependencies]
 bevy = "0.11"
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git", rev = "fbda80c" }
 rand = "0.8"
