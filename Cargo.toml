@@ -17,18 +17,18 @@ log = []
 state = [ "dep:seldom_state" ]
 
 [dependencies]
-bevy = { version = "0.11", default-features = false, optional = true }
+bevy = { version = "0.12", default-features = false, optional = true }
 cdt = "0.1"
 glam = { version = "0.24", features = [ "mint" ] }
 mint = "0.5"
 navmesh = { version = "0.12", features = [ "mint" ] }
-seldom_fn_plugin = { version = "0.4", optional = true }
-seldom_interop = { version = "0.4", optional = true }
-seldom_state = { version = "0.7", optional = true }
+seldom_fn_plugin = { version = "0.5", optional = true }
+seldom_interop = { version = "0.5", optional = true }
+seldom_state = { version = "0.8", optional = true }
 
 [dev-dependencies]
-bevy = "0.11"
-bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git", rev = "fbda80c" }
+bevy = "0.12"
+bevy_ecs_tilemap = { git = "https://github.com/divark/bevy_ecs_tilemap", rev = "658b6c1" }
 rand = "0.8"
 
 [[example]]
