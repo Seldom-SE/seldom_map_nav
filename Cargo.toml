@@ -21,15 +21,19 @@ bevy = { version = "0.12", default-features = false, optional = true }
 cdt = "0.1"
 glam = { version = "0.24", features = [ "mint" ] }
 mint = "0.5"
-navmesh = { version = "0.12", features = [ "mint" ] }
+# FEB 1st 2024, requires patch for wasm build (typid/web feature): https://github.com/PsichiX/navmesh/pull/5
+navmesh = { git = "https://github.com/Pietrek14/navmesh", rev = "ea647e1", features = [ "mint", "web" ] }
 seldom_fn_plugin = { version = "0.5", optional = true }
 seldom_interop = { version = "0.5", optional = true }
 seldom_state = { version = "0.8", optional = true }
 
 [dev-dependencies]
 bevy = "0.12"
-bevy_ecs_tilemap = { git = "https://github.com/divark/bevy_ecs_tilemap", rev = "658b6c1" }
+# FEB 1st 2024, main is updated but no bevy 0.12 release: https://github.com/StarArawn/bevy_ecs_tilemap/issues/488#issuecomment-1863767582
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap", rev = "b08a5d9" }
 rand = "0.8"
+
+
 
 [[example]]
 name = "state"
