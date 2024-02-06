@@ -86,13 +86,13 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn move_player(
     mut commands: Commands,
     players: Query<(Entity, &GoToSelection), Added<GoToSelection>>,
-    navmesheses: Query<Entity, With<Navmeshes>>,
+    navmeshes: Query<Entity, With<Navmeshes>>,
 ) {
     // `GoToSelection` component was added by the state machine after `Click` triggers
     for (entity, go_to_selection) in &players {
         commands.entity(entity).insert(NavBundle {
             pathfind: Pathfind::new(
-                navmesheses.single(),
+                navmeshes.single(),
                 PLAYER_CLEARANCE,
                 None,
                 PathTarget::Static(go_to_selection.target),

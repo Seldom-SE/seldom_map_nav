@@ -192,7 +192,7 @@ struct Player;
 fn move_player(
     mut commands: Commands,
     players: Query<Entity, With<Player>>,
-    navmesheses: Query<Entity, With<Navmeshes>>,
+    navmeshes: Query<Entity, With<Navmeshes>>,
     cursor_pos: Res<CursorPos>,
     mouse: Res<Input<MouseButton>>,
 ) {
@@ -205,7 +205,7 @@ fn move_player(
             let SquarePos(square_coord) = SquarePos::from_iso(cursor_pos);
             commands.entity(players.single()).insert(NavBundle {
                 pathfind: Pathfind::new(
-                    navmesheses.single(),
+                    navmeshes.single(),
                     PLAYER_CLEARANCE,
                     None,
                     PathTarget::Static(square_coord),

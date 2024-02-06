@@ -80,7 +80,7 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn move_player(
     mut commands: Commands,
     players: Query<Entity, With<Player>>,
-    navmesheses: Query<Entity, With<Navmeshes>>,
+    navmeshes: Query<Entity, With<Navmeshes>>,
     cursor_pos: Res<CursorPos>,
     mouse: Res<Input<MouseButton>>,
 ) {
@@ -92,7 +92,7 @@ fn move_player(
             // only insert `Pathfind`.
             commands.entity(players.single()).insert(NavBundle {
                 pathfind: Pathfind::new(
-                    navmesheses.single(),
+                    navmeshes.single(),
                     PLAYER_CLEARANCE,
                     None,
                     PathTarget::Static(cursor_pos),
