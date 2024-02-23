@@ -14,23 +14,20 @@ use std::f32::consts::FRAC_1_SQRT_2;
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use rand::{thread_rng, Rng};
-use seldom_interop::prelude::*;
 use seldom_map_nav::prelude::*;
 
 // Custom position component for navigation
 #[derive(Clone, Component, Copy)]
 struct SquarePos(Vec2);
 
-// Required trait from `seldom_interop` to nav with this component
+// Required to nav with this component
 impl Position2 for SquarePos {
-    type Position = Vec2;
-
-    fn get(&self) -> Self::Position {
+    fn get(&self) -> Vec2 {
         let &Self(square) = self;
         square
     }
 
-    fn set(&mut self, pos: Self::Position) {
+    fn set(&mut self, pos: Vec2) {
         let Self(square) = self;
         *square = pos;
     }
@@ -194,7 +191,7 @@ fn move_player(
     players: Query<Entity, With<Player>>,
     navmesheses: Query<Entity, With<Navmeshes>>,
     cursor_pos: Res<CursorPos>,
-    mouse: Res<Input<MouseButton>>,
+    mouse: Res<ButtonInput<MouseButton>>,
 ) {
     if mouse.just_pressed(MouseButton::Left) {
         if let Some(cursor_pos) = **cursor_pos {

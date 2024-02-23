@@ -4,13 +4,11 @@
 [![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/Seldom-SE/seldom_map_nav#license)
 [![Crates.io](https://img.shields.io/crates/d/seldom_map_nav.svg)](https://crates.io/crates/seldom_map_nav)
 
-`seldom_map_nav` is a Bevy plugin that does navmesh generation, pathfinding, and navigation
-for tilemaps. Navmesh generation is available without Bevy dependency. It is agnostic
-to the solution you use for your tilemaps, but doesn't require much glue. It is also agnostic
-to your position type, as long as it implements `Position2<Position = Vec2>`
-from [`seldom_interop`](https://github.com/Seldom-SE/seldom_interop) (ex. `Transform`).
-It's compatible with [`seldom_state`](https://github.com/Seldom-SE/seldom_state)
-with the `state` feature.
+`seldom_map_nav` is a Bevy plugin that does navmesh generation, pathfinding, and navigation for
+tilemaps. Navmesh generation is available without Bevy dependency. It is agnostic to the solution
+you use for your tilemaps, but doesn't require much glue. It is also agnostic to your position type,
+as long as it implements `Position2` (ex. `Transform`). It's compatible with
+[`seldom_state`](https://github.com/Seldom-SE/seldom_state) with the `state` feature.
 
 ## Features
 

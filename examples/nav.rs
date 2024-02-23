@@ -82,7 +82,7 @@ fn move_player(
     players: Query<Entity, With<Player>>,
     navmesheses: Query<Entity, With<Navmeshes>>,
     cursor_pos: Res<CursorPos>,
-    mouse: Res<Input<MouseButton>>,
+    mouse: Res<ButtonInput<MouseButton>>,
 ) {
     if mouse.just_pressed(MouseButton::Left) {
         if let Some(cursor_pos) = **cursor_pos {

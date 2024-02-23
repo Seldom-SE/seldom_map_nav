@@ -9,6 +9,8 @@ mod nav;
 #[cfg(feature = "bevy")]
 mod plugin;
 #[cfg(feature = "bevy")]
+mod pos;
+#[cfg(feature = "bevy")]
 pub mod set;
 mod vertex;
 
@@ -16,8 +18,6 @@ mod vertex;
 pub mod prelude {
     #[cfg(feature = "bevy")]
     pub(crate) use bevy::prelude::*;
-    #[cfg(feature = "bevy")]
-    pub(crate) use seldom_interop::prelude::*;
     #[cfg(feature = "state")]
     pub(crate) use seldom_state::prelude::*;
 
@@ -26,6 +26,7 @@ pub mod prelude {
     pub use crate::{
         nav::{Nav, NavBundle, PathTarget, Pathfind},
         plugin::{map_nav_plugin, MapNavPlugin},
+        pos::Position2,
     };
     pub use navmesh::{NavPathMode, NavQuery};
 }

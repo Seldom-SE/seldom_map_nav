@@ -5,7 +5,7 @@ use navmesh::{NavPathMode, NavQuery};
 
 use crate::{prelude::*, set::MapNavSet};
 
-pub(crate) fn nav_plugin<P: Position2<Position = Vec2>>(app: &mut App) {
+pub(crate) fn nav_plugin<P: Position2>(app: &mut App) {
     app.add_systems(
         Update,
         (apply_deferred, generate_paths::<P>, nav::<P>)
@@ -93,7 +93,7 @@ pub struct NavBundle {
     pub nav: Nav,
 }
 
-pub(crate) fn generate_paths<P: Position2<Position = Vec2>>(
+pub(crate) fn generate_paths<P: Position2>(
     #[cfg(feature = "state")] mut commands: Commands,
     positions: Query<&P>,
     mut pathfinds: Query<(Entity, &P, &mut Pathfind)>,
@@ -161,7 +161,9 @@ pub(crate) fn generate_paths<P: Position2<Position = Vec2>>(
         let failure = path.is_err();
         pathfind.path = path.unwrap_or_default();
 
-        let Ok(mut nav) = navs.get_mut(entity) else { continue };
+        let Ok(mut nav) = navs.get_mut(entity) else {
+            continue;
+        };
 
         nav.done = pathfind.path.is_empty();
 
@@ -172,7 +174,7 @@ pub(crate) fn generate_paths<P: Position2<Position = Vec2>>(
     }
 }
 
-fn nav<P: Position2<Position = Vec2>>(
+fn nav<P: Position2>(
     #[cfg(feature = "state")] mut commands: Commands,
     mut navs: Query<(Entity, &mut P, &mut Pathfind, &mut Nav)>,
     time: Res<Time>,

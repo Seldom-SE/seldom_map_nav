@@ -6,22 +6,13 @@ use seldom_map_nav::prelude::*;
 use seldom_map_nav::set::MapNavSet;
 use seldom_state::prelude::*;
 
-#[derive(Clone, Reflect)]
-struct Click;
-
-// Triggers are used to create transitions between states
-impl OptionTrigger for Click {
-    // Immutable system parameters are accessed here
-    type Param<'w, 's> = (Res<'w, Input<MouseButton>>, Res<'w, CursorPos>);
-    type Some = Vec2;
-
-    fn trigger(&self, _: Entity, (mouse, cursor_position): Self::Param<'_, '_>) -> Option<Vec2> {
-        mouse
-            .just_pressed(MouseButton::Left)
-            .then_some(())
-            // Return any needed trigger data here. Here we return a `Vec2` that the player will
-            // move to
-            .and(**cursor_position)
+fn click(mouse: Res<ButtonInput<MouseButton>>, cursor_position: Res<CursorPos>) -> Option<Vec2> {
+    if mouse.just_pressed(MouseButton::Left) {
+        // Return any needed trigger data here. Here we return a `Vec2` that the player will
+        // move to
+        **cursor_position
+    } else {
+        None
     }
 }
 
@@ -67,7 +58,7 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
         player_bundle,
         StateMachine::default()
             // When the player clicks, go there. Using previously defined `Click` trigger here
-            .trans_builder(Click, |_: &AnyState, pos| {
+            .trans_builder(click, |_: &AnyState, pos| {
                 Some(GoToSelection {
                     speed: 200.,
                     target: pos,
@@ -75,7 +66,7 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             // `DoneTrigger` triggers when the `Done` component is added to the entity. When they're
             // done going to the selection, idle.
-            .trans::<GoToSelection>(DoneTrigger::Success, Idle)
+            .trans::<GoToSelection, _>(done(None), Idle)
             .set_trans_logging(true),
         Player,
         Idle,
