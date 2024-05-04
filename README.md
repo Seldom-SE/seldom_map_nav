@@ -12,10 +12,10 @@ as long as it implements `Position2` (ex. `Transform`). It's compatible with
 
 ## Features
 
-* Navmesh generation for finite, square tilemaps
-* Awareness of navigator physical size
-* Bevy plugin for pathfinding and navigation
-* Integration with `seldom_state`
+- Navmesh generation for finite, square tilemaps
+- Awareness of navigator physical size
+- Bevy plugin for pathfinding and navigation
+- Integration with `seldom_state`
 
 ## Future Work
 
@@ -32,7 +32,7 @@ though.
 
 If the `state` feature is enabled, it will trigger the `DoneTrigger` when it is done navigating (if
 it reaches the destination or cannot find a path).
-Also, see related example: ```cargo run --example state --features="state"```
+Also, see related example: `cargo run --example state --features="state"`
 
 ## Usage
 
@@ -62,6 +62,7 @@ need improvement, feel free to submit an issue or pr!
 
 | Bevy | `seldom_state` | `seldom_map_nav` |
 | ---- | -------------- | ---------------- |
+| 0.13 | 0.10           | 0.6              |
 | 0.11 | 0.7            | 0.5              |
 | 0.10 | 0.6            | 0.4              |
 | 0.10 | 0.5            | 0.3              |
