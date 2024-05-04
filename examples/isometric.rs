@@ -2,17 +2,28 @@
 
 // The tilemap displays as isometric, but the navmesh is square, so we use square-to-iso conversions
 // and vice versa. To convert from square to iso coordinates, we:
-// 1. Rotate them by 45 degrees clockwise
+// 1. Rotate them by 45 degrees conunter-clockwise
 // 2. Scale Y by 0.5
 // Converting iso to square coordinates is the inverse: first we scale Y by 2, and then rotate it
-// counter-clockwise.
+// clockwise.
 
 // To separate these coordinate systems, we use a custom position component, `SquarePos`.
 
 use std::f32::consts::FRAC_1_SQRT_2;
 
-use bevy::prelude::*;
-use bevy_ecs_tilemap::prelude::*;
+use bevy::{prelude::*, render::render_resource::FilterMode};
+use bevy_entitiles::{
+    render::material::StandardTilemapMaterial,
+    tilemap::{
+        bundles::StandardTilemapBundle,
+        map::{
+            TileRenderSize, TilemapName, TilemapSlotSize, TilemapStorage, TilemapTexture,
+            TilemapTextureDescriptor, TilemapTextures, TilemapTransform, TilemapType,
+        },
+        tile::{TileBuilder, TileLayer},
+    },
+    EntiTilesPlugin,
+};
 use rand::{thread_rng, Rng};
 use seldom_map_nav::prelude::*;
 
@@ -38,16 +49,16 @@ impl SquarePos {
         // FRAC_1_SQRT_2 = 1 / sqrt(2) = sin(45) = cos(45)
         iso.y *= 2.;
         Self(Vec2 {
-            x: iso.x * FRAC_1_SQRT_2 - iso.y * FRAC_1_SQRT_2,
-            y: iso.x * FRAC_1_SQRT_2 + iso.y * FRAC_1_SQRT_2,
+            x: iso.x * FRAC_1_SQRT_2 + iso.y * FRAC_1_SQRT_2,
+            y: -iso.x * FRAC_1_SQRT_2 + iso.y * FRAC_1_SQRT_2,
         })
     }
 
     fn to_iso(self) -> Vec2 {
         let Self(square) = self;
         Vec2 {
-            x: square.x * FRAC_1_SQRT_2 + square.y * FRAC_1_SQRT_2,
-            y: (-square.x * FRAC_1_SQRT_2 + square.y * FRAC_1_SQRT_2) / 2.,
+            x: square.x * FRAC_1_SQRT_2 - square.y * FRAC_1_SQRT_2,
+            y: (square.x * FRAC_1_SQRT_2 + square.y * FRAC_1_SQRT_2) / 2.,
         }
     }
 }
@@ -59,7 +70,7 @@ fn main() {
             // This plugin is required for pathfinding and navigation. The type parameter is the
             // position component that you use. We use `SquarePos` instead of `Transform`.
             MapNavPlugin::<SquarePos>::default(),
-            TilemapPlugin,
+            EntiTilesPlugin,
         ))
         .init_resource::<CursorPos>()
         .add_systems(Startup, init)
@@ -74,17 +85,22 @@ const MAP_SIZE: UVec2 = UVec2::new(12, 12);
 const TILE_SIZE: Vec2 = Vec2::new(100., 50.);
 
 // add 0.5X offset because our visible tiles spawned with center anchor
-const MAP_OFFSET: Vec2 = Vec2::new(50., 0.);
+const MAP_OFFSET: Vec2 = Vec2::new(-50., 0.);
 
 // This is the radius of a square around the player that should not intersect with the terrain
 const PLAYER_CLEARANCE: f32 = 8.;
 
-fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn init(
+    mut materials: ResMut<Assets<StandardTilemapMaterial>>,
+    mut textures: ResMut<Assets<TilemapTextures>>,
+    assets: Res<AssetServer>,
+    mut commands: Commands,
+) {
     commands.spawn(Camera2dBundle {
         // Center the camera
         transform: Transform::from_translation(Vec3::new(
-            MAP_SIZE.x as f32 * TILE_SIZE.x / 2.,
             0.,
+            MAP_SIZE.y as f32 * TILE_SIZE.y / 2.,
             0.,
         )),
         ..default()
@@ -92,17 +108,18 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let mut rng = thread_rng();
     // Randomly generate the tilemap
-    let tilemap = [(); (MAP_SIZE.x * MAP_SIZE.y) as usize].map(|_| match rng.gen_bool(0.8) {
-        true => Navability::Navable,
-        false => Navability::Solid,
+    let tilemap = [(); (MAP_SIZE.x * MAP_SIZE.y) as usize].map(|_| {
+        if rng.gen_bool(0.8) {
+            Navability::Navable
+        } else {
+            Navability::Solid
+        }
     });
     let navability = |pos: UVec2| tilemap[(pos.y * MAP_SIZE.x + pos.x) as usize];
 
-    // Setup `bevy_ecs_tilemap`
-    let map_size = MAP_SIZE.into();
-    let mut tile_storage = TileStorage::empty(map_size);
+    // Setup `bevy_entitiles`
     let tilemap_entity = commands.spawn_empty().id();
-    let tilemap_id = TilemapId(tilemap_entity);
+    let mut tile_storage = TilemapStorage::new(MAP_SIZE.x, tilemap_entity);
 
     // To get the square tile size that fits our iso coords, we need to take our iso tile, scale it
     // up by a factor of 2 along the Y-axis, and then calculate the length of the side of the
@@ -112,7 +129,6 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
     let navmap_tile_size = Vec2::splat((TILE_SIZE.x * TILE_SIZE.x / 2.).sqrt());
 
     // Spawn images for the tiles
-    let tile_image = asset_server.load("tile-iso.png");
     let mut player_pos = default();
 
     for x in 0..MAP_SIZE.x {
@@ -122,30 +138,37 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
                 player_pos = pos.as_vec2() * navmap_tile_size;
 
                 // Spawning tiles
-                let tile_pos = pos.into();
-                let tile_entity = commands
-                    .spawn(TileBundle {
-                        position: tile_pos,
-                        tilemap_id,
-                        texture_index: TileTextureIndex(0),
-                        ..default()
-                    })
-                    .id();
-                tile_storage.set(&tile_pos, tile_entity);
+                tile_storage.set(
+                    &mut commands,
+                    pos.as_ivec2(),
+                    TileBuilder::new().with_layer(0, TileLayer::no_flip(0)),
+                );
             }
         }
     }
 
-    commands.entity(tilemap_entity).insert(TilemapBundle {
-        grid_size: TILE_SIZE.into(),
-        size: map_size,
-        storage: tile_storage,
-        texture: TilemapTexture::Single(tile_image),
-        tile_size: TILE_SIZE.into(),
-        map_type: TilemapType::Isometric(IsoCoordSystem::Diamond),
-        transform: Transform::from_xyz(MAP_OFFSET.x, MAP_OFFSET.y, 0.),
-        ..default()
-    });
+    commands
+        .entity(tilemap_entity)
+        .insert(StandardTilemapBundle {
+            name: TilemapName("map".to_string()),
+            tile_render_size: TileRenderSize(TILE_SIZE),
+            slot_size: TilemapSlotSize(TILE_SIZE),
+            ty: TilemapType::Isometric,
+            storage: tile_storage,
+            material: materials.add(StandardTilemapMaterial { tint: Color::WHITE }),
+            textures: textures.add(TilemapTextures::single(
+                TilemapTexture::new(
+                    assets.load("tile-iso.png"),
+                    TilemapTextureDescriptor::new(TILE_SIZE.as_uvec2(), TILE_SIZE.as_uvec2()),
+                ),
+                FilterMode::Linear,
+            )),
+            transform: TilemapTransform {
+                translation: MAP_OFFSET,
+                ..default()
+            },
+            ..default()
+        });
 
     // Here's the important bit:
 
@@ -159,7 +182,7 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             transform: Transform::from_translation(square_pos.to_iso().extend(1.)),
-            texture: asset_server.load("player.png"),
+            texture: assets.load("player.png"),
             ..default()
         },
         Player,
