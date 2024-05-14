@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1 (2024-05-14)
+
+### Added
+
+- `wasm` feature
+
 ## 0.6 (2024-05-04)
 
 ### Changed
