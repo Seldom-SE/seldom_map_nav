@@ -15,7 +15,7 @@ bevy = ["dep:bevy", "dep:seldom_fn_plugin"]
 default = ["bevy"]
 log = []
 state = ["dep:seldom_state"]
-web = ["typid/web"]
+wasm = ["typid/web"]
 
 [dependencies]
 bevy = { version = "0.13.0", default-features = false, optional = true }
