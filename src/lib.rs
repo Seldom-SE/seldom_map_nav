@@ -25,7 +25,7 @@ pub mod prelude {
     #[cfg(feature = "bevy")]
     pub use crate::{
         nav::{Nav, NavBundle, PathTarget, Pathfind},
-        plugin::{map_nav_plugin, MapNavPlugin},
+        plugin::MapNavPlugin,
         pos::Position2,
     };
     pub use navmesh::{NavPathMode, NavQuery};

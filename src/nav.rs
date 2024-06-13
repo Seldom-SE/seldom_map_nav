@@ -5,7 +5,7 @@ use navmesh::{NavPathMode, NavQuery};
 
 use crate::{prelude::*, set::MapNavSet};
 
-pub(crate) fn nav_plugin<P: Position2>(app: &mut App) {
+pub(crate) fn plug<P: Position2>(app: &mut App) {
     app.add_systems(
         Update,
         (apply_deferred, generate_paths::<P>, nav::<P>)
