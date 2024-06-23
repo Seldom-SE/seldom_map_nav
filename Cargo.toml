@@ -29,7 +29,7 @@ typid = "1.1"
 [dev-dependencies]
 rand = "0.8.5"
 bevy = "0.14.0-rc.2"
-bevy_entitiles = "0.9.0"
+bevy_entitiles = { git = "https://github.com/443eb9/bevy_entitiles", rev = "1332284" }
 
 [[example]]
 name = "state"

@@ -155,7 +155,9 @@ fn init(
             slot_size: TilemapSlotSize(TILE_SIZE),
             ty: TilemapType::Isometric,
             storage: tile_storage,
-            material: materials.add(StandardTilemapMaterial { tint: Color::WHITE }),
+            material: materials.add(StandardTilemapMaterial {
+                tint: LinearRgba::WHITE,
+            }),
             textures: textures.add(TilemapTextures::single(
                 TilemapTexture::new(
                     assets.load("tile-iso.png"),
