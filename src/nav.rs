@@ -188,7 +188,7 @@ fn nav<P: Position2>(
         }
 
         let mut pos = position.get();
-        let mut travel_dist = nav.speed * time.delta_seconds();
+        let mut travel_dist = nav.speed * time.delta_secs();
         let mut dest;
         let mut dest_dist;
 

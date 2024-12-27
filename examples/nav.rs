@@ -21,11 +21,11 @@ const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 const PLAYER_CLEARANCE: f32 = 8.;
 
 fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(Camera2dBundle {
+    commands.spawn((
+        Camera2d,
         // Centering the camera
-        transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
-        ..default()
-    });
+        Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
+    ));
 
     let mut rng = thread_rng();
     // Randomly generate the tilemap
@@ -45,15 +45,14 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
                 let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
                 player_pos = pos;
 
-                commands.spawn(SpriteBundle {
-                    sprite: Sprite {
+                commands.spawn((
+                    Sprite {
+                        image: tile_image.clone(),
                         anchor: Anchor::BottomLeft,
                         ..default()
                     },
-                    transform: Transform::from_translation(pos.extend(0.)),
-                    texture: tile_image.clone(),
-                    ..default()
-                });
+                    Transform::from_translation(pos.extend(0.)),
+                ));
             }
         }
     }
@@ -67,12 +66,12 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Spawn the player component. A position component is necessary. We will add `NavBundle`
     // later.
     commands.spawn((
-        SpriteBundle {
-            transform: Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
-            texture: asset_server.load("player.png"),
+        Player,
+        Sprite {
+            image: asset_server.load("player.png"),
             ..default()
         },
-        Player,
+        Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
     ));
 }
 
@@ -122,5 +121,5 @@ fn update_cursor_pos(
     **position = windows
         .single()
         .cursor_position()
-        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos));
+        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos).ok());
 }

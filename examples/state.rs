@@ -16,15 +16,12 @@ fn click(mouse: Res<ButtonInput<MouseButton>>, cursor_position: Res<CursorPos>) 
     }
 }
 
-// Two states that we will switch between, using SparseSet instead of Table for fast insertion and
-// removal
+// Two states that we will switch between
 
 #[derive(Clone, Component, Reflect)]
-#[component(storage = "SparseSet")]
 struct Idle;
 
 #[derive(Clone, Copy, Component, Reflect)]
-#[component(storage = "SparseSet")]
 struct GoToSelection {
     speed: f32,
     target: Vec2,
@@ -102,12 +99,12 @@ const TILE_SIZE: Vec2 = Vec2::new(32., 32.);
 // This is the radius of a square around the player that should not intersect with the terrain
 const PLAYER_CLEARANCE: f32 = 8.;
 
-fn init_inner(commands: &mut Commands, asset_server: &Res<AssetServer>) -> SpriteBundle {
-    commands.spawn(Camera2dBundle {
+fn init_inner(commands: &mut Commands, asset_server: &Res<AssetServer>) -> impl Bundle {
+    commands.spawn((
+        Camera2d,
         // Centering the camera
-        transform: Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
-        ..default()
-    });
+        Transform::from_translation((MAP_SIZE.as_vec2() * TILE_SIZE / 2.).extend(999.9)),
+    ));
 
     let mut rng = thread_rng();
     // Randomly generate the tilemap
@@ -127,15 +124,14 @@ fn init_inner(commands: &mut Commands, asset_server: &Res<AssetServer>) -> Sprit
                 let pos = UVec2::new(x, y).as_vec2() * TILE_SIZE;
                 player_pos = pos;
 
-                commands.spawn(SpriteBundle {
-                    sprite: Sprite {
+                commands.spawn((
+                    Sprite {
+                        image: tile_image.clone(),
                         anchor: Anchor::BottomLeft,
                         ..default()
                     },
-                    transform: Transform::from_translation(pos.extend(0.)),
-                    texture: tile_image.clone(),
-                    ..default()
-                });
+                    Transform::from_translation(pos.extend(0.)),
+                ));
             }
         }
     }
@@ -144,11 +140,10 @@ fn init_inner(commands: &mut Commands, asset_server: &Res<AssetServer>) -> Sprit
     commands
         .spawn(Navmeshes::generate(MAP_SIZE, TILE_SIZE, navability, [PLAYER_CLEARANCE]).unwrap());
 
-    SpriteBundle {
-        transform: Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
-        texture: asset_server.load("player.png"),
-        ..default()
-    }
+    (
+        Sprite::from_image(asset_server.load("player.png")),
+        Transform::from_translation((player_pos + TILE_SIZE / 2.).extend(1.)),
+    )
 }
 
 #[derive(Component)]
@@ -166,5 +161,5 @@ fn update_cursor_pos(
     **position = windows
         .single()
         .cursor_position()
-        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos));
+        .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos).ok());
 }
