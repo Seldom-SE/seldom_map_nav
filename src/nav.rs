@@ -8,7 +8,7 @@ use crate::{prelude::*, set::MapNavSet};
 pub(crate) fn plug<P: Position2>(app: &mut App) {
     app.add_systems(
         Update,
-        (apply_deferred, generate_paths::<P>, nav::<P>)
+        (ApplyDeferred, generate_paths::<P>, nav::<P>)
             .chain()
             .in_set(MapNavSet),
     );
@@ -61,7 +61,7 @@ impl Pathfind {
             repath_frequency,
             next_repath: Duration::ZERO,
             target,
-            path: default(),
+            path: VecDeque::new(),
             query,
             path_mode,
         }

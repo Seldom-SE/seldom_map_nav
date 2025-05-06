@@ -1,9 +1,11 @@
 //! Interoperability traits for positional components
 
+use bevy_ecs::component::Mutable;
+
 use crate::prelude::*;
 
 /// Component that represents a 2D position
-pub trait Position2: Component {
+pub trait Position2: Component<Mutability = Mutable> {
     /// Get the position as a vector
     fn get(&self) -> Vec2;
     /// Set the position from a vector

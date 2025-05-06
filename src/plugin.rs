@@ -15,6 +15,6 @@ impl<P: Position2> Plugin for MapNavPlugin<P> {
 
 impl<P: Position2> Default for MapNavPlugin<P> {
     fn default() -> Self {
-        Self(default())
+        Self(PhantomData)
     }
 }

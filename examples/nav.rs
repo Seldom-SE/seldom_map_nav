@@ -82,16 +82,16 @@ fn move_player(
     navmesheses: Query<Entity, With<Navmeshes>>,
     cursor_pos: Res<CursorPos>,
     mouse: Res<ButtonInput<MouseButton>>,
-) {
+) -> Result {
     if mouse.just_pressed(MouseButton::Left) {
         if let Some(cursor_pos) = **cursor_pos {
             // Clicked somewhere on the screen!
             // Add `NavBundle` to start navigating to that position
             // If you want to write your own movement, but still want paths generated,
             // only insert `Pathfind`.
-            commands.entity(players.single()).insert(NavBundle {
+            commands.entity(players.single()?).insert(NavBundle {
                 pathfind: Pathfind::new(
-                    navmesheses.single(),
+                    navmesheses.single()?,
                     PLAYER_CLEARANCE,
                     None,
                     PathTarget::Static(cursor_pos),
@@ -102,6 +102,8 @@ fn move_player(
             });
         }
     }
+
+    Ok(())
 }
 
 // The code after this comment is not related to `seldom_map_nav`
@@ -116,10 +118,12 @@ fn update_cursor_pos(
     cameras: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     mut position: ResMut<CursorPos>,
-) {
-    let (camera, transform) = cameras.single();
+) -> Result {
+    let (camera, transform) = cameras.single()?;
     **position = windows
-        .single()
+        .single()?
         .cursor_position()
         .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos).ok());
+
+    Ok(())
 }

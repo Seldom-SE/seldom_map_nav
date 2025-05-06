@@ -31,7 +31,7 @@ fn main() {
     App::new()
         .add_plugins((
             DefaultPlugins,
-            StateMachinePlugin,
+            StateMachinePlugin::default(),
             MapNavPlugin::<Transform>::default(),
         ))
         .init_resource::<CursorPos>()
@@ -55,11 +55,9 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
         player_bundle,
         StateMachine::default()
             // When the player clicks, go there. Using previously defined `Click` trigger here
-            .trans_builder(click, |_: &AnyState, pos| {
-                Some(GoToSelection {
-                    speed: 200.,
-                    target: pos,
-                })
+            .trans_builder(click, |trans: Trans<AnyState, _>| GoToSelection {
+                speed: 200.,
+                target: trans.out,
             })
             // `DoneTrigger` triggers when the `Done` component is added to the entity. When they're
             // done going to the selection, idle.
@@ -75,12 +73,12 @@ fn move_player(
     mut commands: Commands,
     players: Query<(Entity, &GoToSelection), Added<GoToSelection>>,
     navmesheses: Query<Entity, With<Navmeshes>>,
-) {
+) -> Result {
     // `GoToSelection` component was added by the state machine after `Click` triggers
     for (entity, go_to_selection) in &players {
         commands.entity(entity).insert(NavBundle {
             pathfind: Pathfind::new(
-                navmesheses.single(),
+                navmesheses.single()?,
                 PLAYER_CLEARANCE,
                 None,
                 PathTarget::Static(go_to_selection.target),
@@ -90,6 +88,8 @@ fn move_player(
             nav: Nav::new(go_to_selection.speed),
         });
     }
+
+    Ok(())
 }
 
 // The code after this comment is less relevant to this particular example
@@ -156,10 +156,12 @@ fn update_cursor_pos(
     cameras: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window>,
     mut position: ResMut<CursorPos>,
-) {
-    let (camera, transform) = cameras.single();
+) -> Result {
+    let (camera, transform) = cameras.single()?;
     **position = windows
-        .single()
+        .single()?
         .cursor_position()
         .and_then(|cursor_pos| camera.viewport_to_world_2d(transform, cursor_pos).ok());
+
+    Ok(())
 }

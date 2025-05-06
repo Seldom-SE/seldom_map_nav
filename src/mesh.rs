@@ -5,7 +5,7 @@ use crate::prelude::*;
 use crate::vertex::{Ordinal, VertexNormal};
 
 #[cfg(feature = "bevy")]
-use bevy::utils::HashMap;
+use bevy_platform::collections::HashMap;
 use cdt::triangulate_with_edges;
 use glam::{UVec2, Vec2};
 use mint::Vector3;
