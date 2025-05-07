@@ -28,16 +28,22 @@ wasm = ["typid/web"]
 
 [dependencies]
 bevy_app = { version = "0.16.0", default-features = false, optional = true }
-bevy_ecs = { version = "0.16.0", default-features = false, optional = true }
+bevy_ecs = { version = "0.16.0", default-features = false, optional = true, features = [
+    "bevy_reflect",
+] }
 bevy_log = { version = "0.16.0", default-features = false, optional = true }
 bevy_math = { version = "0.16.0", default-features = false, features = [
     "std",
 ], optional = true }
 bevy_platform = { version = "0.16.0", default-features = false, optional = true }
-bevy_reflect = { version = "0.16.0", default-features = false, optional = true }
+bevy_reflect = { version = "0.16.0", default-features = false, optional = true, features = [
+    "glam",
+] }
 bevy_time = { version = "0.16.0", default-features = false, optional = true }
 # TODO Give its own feature gate?
-bevy_transform = { version = "0.16.0", default-features = false, optional = true }
+bevy_transform = { version = "0.16.0", default-features = false, features = [
+    "bevy-support",
+], optional = true }
 cdt = "0.1.0"
 glam = { version = "0.29.0", features = ["mint"] }
 mint = "0.5.9"
