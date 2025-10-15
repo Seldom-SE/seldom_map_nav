@@ -27,34 +27,42 @@ state = ["bevy", "dep:seldom_state"]
 wasm = ["typid/web"]
 
 [dependencies]
-bevy_app = { version = "0.16.0", default-features = false, optional = true }
-bevy_ecs = { version = "0.16.0", default-features = false, optional = true, features = [
+bevy_app = { version = "0.17.2", default-features = false, optional = true }
+bevy_ecs = { version = "0.17.2", default-features = false, optional = true, features = [
     "bevy_reflect",
 ] }
-bevy_log = { version = "0.16.0", default-features = false, optional = true }
-bevy_math = { version = "0.16.0", default-features = false, features = [
+bevy_log = { version = "0.17.2", default-features = false, optional = true }
+bevy_math = { version = "0.17.2", default-features = false, features = [
     "std",
 ], optional = true }
-bevy_platform = { version = "0.16.0", default-features = false, optional = true }
-bevy_reflect = { version = "0.16.0", default-features = false, optional = true, features = [
+bevy_platform = { version = "0.17.2", default-features = false, optional = true }
+bevy_reflect = { version = "0.17.2", default-features = false, optional = true, features = [
     "glam",
 ] }
-bevy_time = { version = "0.16.0", default-features = false, optional = true }
+bevy_time = { version = "0.17.2", default-features = false, optional = true }
 # TODO Give its own feature gate?
-bevy_transform = { version = "0.16.0", default-features = false, features = [
+bevy_transform = { version = "0.17.2", default-features = false, features = [
     "bevy-support",
 ], optional = true }
 cdt = "0.1.0"
-glam = { version = "0.29.0", features = ["mint"] }
+glam = { version = "0.30.8", features = ["mint"] }
 mint = "0.5.9"
 navmesh = { version = "0.12.1", features = ["mint"] }
-seldom_state = { version = "0.14.0", optional = true }
+seldom_state = { version = "0.15.0", optional = true }
 typid = "1.1"
 
 [dev-dependencies]
 rand = "0.8.5"
-bevy = "0.16.0"
 # bevy_entitiles = { git = "https://github.com/443eb9/bevy_entitiles", rev = "e2ff0d5" }
+
+[dev-dependencies.bevy]
+version = "0.17.2"
+default-features = false
+features = [
+    "bevy_sprite_render",
+    "png",
+    "x11",
+]
 
 [[example]]
 name = "nav"

@@ -46,12 +46,9 @@ fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
                 player_pos = pos;
 
                 commands.spawn((
-                    Sprite {
-                        image: tile_image.clone(),
-                        anchor: Anchor::BottomLeft,
-                        ..default()
-                    },
                     Transform::from_translation(pos.extend(0.)),
+                    Sprite::from_image(tile_image.clone()),
+                    Anchor::BOTTOM_LEFT,
                 ));
             }
         }
