@@ -1,10 +1,14 @@
 # Changelog
 
+## 0.10 (2025-10-15)
+
+- Updated `bevy` to 0.17
+
 ## 0.9 (2025-05-06)
 
 ### Changed
 
-- Update `bevy` to 0.16
+- Updated `bevy` to 0.16
 
 ## 0.8 (2024-12-27)
 
